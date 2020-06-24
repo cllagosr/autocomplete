@@ -14,15 +14,15 @@ export const Input = styled.input`
   border-width: 1px;
   border-style: solid;
   border-radius: 5px;
-  border-color: ${({theme}) => theme.colors.gray};
+  border-color: ${({ theme }) => theme.colors.gray};
   border-image: initial;
   padding: 0 12px;
   font-size: 14px;
-  color: ${({theme}) => theme.colors.font};
+  color: ${({ theme }) => theme.colors.font};
   font-family: inherit;
 
   :focus {
-    border-color: ${({theme}) => theme.colors.darkGray}
+    border-color: ${({ theme }) => theme.colors.darkGray};
   }
 `;
 
@@ -32,14 +32,16 @@ export const ListWrapper = styled.ul`
   margin-top: 0;
   padding-left: 0;
   width: 100%;
-  max-height: 230px;
+  max-height: ${({ maxNumItems }) => maxNumItems * 56}px;
   overflow-y: auto;
-  box-shadow: 0 6px 6px rgba(0,0,0,0.2);
+  box-shadow: 0 6px 6px rgba(0, 0, 0, 0.2);
+`;
 
-  li {
-    cursor: pointer;
-    display: block;
-    white-space: normal;
-    padding: 20px;
-  }
+export const ListItem = styled.li`
+  cursor: pointer;
+  display: block;
+  white-space: normal;
+  padding: 20px;
+  background-color: ${({ selected }) =>
+    selected ? 'rgba(0, 0, 0, 0.05)' : 'transparent'};
 `;
