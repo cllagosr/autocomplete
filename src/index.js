@@ -1,13 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './views/App';
+import App from './views/App/App';
 import { ThemeProvider } from 'styled-components';
 import * as serviceWorker from './serviceWorker';
 import { theme } from './assets/styles/theme';
+import { GlobalStyle } from './assets/styles/global';
 
 ReactDOM.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
+      <GlobalStyle />
       <App />
     </ThemeProvider>
   </React.StrictMode>,
