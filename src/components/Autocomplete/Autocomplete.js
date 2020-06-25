@@ -4,28 +4,41 @@ import * as S from './autocomplete.styled';
 import FuzzySearch from 'fuzzy-search';
 import useClickOutside from '../../hooks/useClickOutside';
 
-const Autocomplete = ({ data }) => {
+const Autocomplete = ({ data, label, placeholder, id }) => {
   let searcher = new FuzzySearch(data);
   const maxNumItems = 4;
 
   const listRef = useRef();
 
   const [filteredData, setFilteredData] = useState([]);
-  const [wrapperRef, openDropdown, setOpenDropdown] = useClickOutside(true);
+  const [noDataFound, setNoDataFound] = useState(false);
+  const [wrapperRef, openDropdown, setOpenDropdown] = useClickOutside();
 
   // handles the index of the selected value in the list
   const [index, setIndex] = useState(-1);
   const [typedValue, setTypedValue] = useState('');
 
-  const handleOnClick = (index) => {
-    setTypedValue(filteredData[index]);
-    setOpenDropdown(false);
+  const getHightlightedList = (value, list) => {
+    let regExp = new RegExp(value, 'i');
+
+    const highlightedList = list.map((item) => {
+      const matchingValue = item.match(regExp);
+      if (matchingValue !== null) {
+        return {
+          value: item,
+          html: item.replace(regExp, `<b>${matchingValue[0]}</b>`),
+        };
+      }
+      return { value: item, html: item };
+    });
+
+    return highlightedList;
   };
 
-  const handleOnFocus = () => {
-    if (filteredData.length > 0) {
-      setOpenDropdown(true);
-    }
+  const handleOnClick = (index) => {
+    setTypedValue(filteredData[index].value);
+    setIndex(index);
+    setOpenDropdown(false);
   };
 
   const handleOnChange = (event) => {
@@ -37,19 +50,25 @@ const Autocomplete = ({ data }) => {
 
       if (searcherResult.length === 0) {
         setOpenDropdown(false);
+        setNoDataFound(true);
       } else {
         setOpenDropdown(true);
-        setFilteredData(searcherResult);
+        setNoDataFound(false);
+        const highlightedList = getHightlightedList(value, searcherResult);
+        setFilteredData(highlightedList);
       }
-    }
-
-    if (value === '') {
+    } else if (value === '') {
       setFilteredData([]);
+      setNoDataFound(false);
+    } else {
+      setOpenDropdown(false);
+      setNoDataFound(false);
     }
   };
 
   const handleKeyDown = (event) => {
     if (!openDropdown) {
+      setIndex(-1);
       return;
     }
 
@@ -57,8 +76,8 @@ const Autocomplete = ({ data }) => {
     const dataLength = filteredData.length;
 
     const currentScrollTop = listRef.current.scrollTop;
-    const wrapperHeight = listRef.current.clientHeight;
-    const itemHeight = wrapperHeight / (dataLength - 1);
+    const listMaxHeight = listRef.current.clientHeight;
+    const itemHeight = listRef.current.scrollHeight / dataLength;
 
     if (keyCode === 38) {
       // arrow up
@@ -71,25 +90,28 @@ const Autocomplete = ({ data }) => {
         setIndex(dataLength - 1);
         listRef.current.scrollTop = itemHeight * dataLength;
       }
+      return;
     }
 
     if (keyCode === 40) {
       // arrow down
       if (index < dataLength - 1) {
         setIndex(index + 1);
-        if (currentScrollTop + wrapperHeight <= (index + 1) * itemHeight) {
+        if (currentScrollTop + listMaxHeight <= (index + 1) * itemHeight) {
           listRef.current.scrollTop = currentScrollTop + itemHeight;
         }
       } else {
         setIndex(0);
         listRef.current.scrollTop = 0;
       }
+      return;
     }
 
     if (keyCode === 13) {
       // enter
-      setTypedValue(filteredData[index]);
+      setTypedValue(filteredData[index].value);
       setOpenDropdown(false);
+      return;
     }
 
     if (keyCode === 27) {
@@ -100,13 +122,16 @@ const Autocomplete = ({ data }) => {
 
   return (
     <S.InputWrapper ref={wrapperRef}>
+      <S.Label htmlFor={id}>{label}</S.Label>
       <S.Input
         type="text"
         onChange={handleOnChange}
-        onFocus={handleOnFocus}
         onKeyDown={handleKeyDown}
         value={typedValue}
+        id={id}
+        placeholder={placeholder}
       />
+      {noDataFound && <S.NoData>No data found</S.NoData>}
       {openDropdown && (
         <S.ListWrapper ref={listRef} maxNumItems={maxNumItems}>
           {filteredData.map((item, i) => {
@@ -114,9 +139,9 @@ const Autocomplete = ({ data }) => {
               <S.ListItem
                 key={i}
                 selected={index === i}
-                onClick={() => handleOnClick(i)}>
-                {item}
-              </S.ListItem>
+                onClick={() => handleOnClick(i)}
+                dangerouslySetInnerHTML={{ __html: item.html }}
+              />
             );
           })}
         </S.ListWrapper>
@@ -127,6 +152,9 @@ const Autocomplete = ({ data }) => {
 
 Autocomplete.propTypes = {
   data: PropTypes.array.isRequired,
+  placeholder: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired,
 };
 
 export default Autocomplete;

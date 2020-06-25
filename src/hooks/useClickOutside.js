@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 
-export default function (initialIsVisible) {
+export default function (initialIsVisible = false) {
   const [openDropdown, setOpenDropdown] = useState(initialIsVisible);
   const ref = useRef(null);
 

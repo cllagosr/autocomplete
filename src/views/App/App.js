@@ -6,7 +6,12 @@ import * as S from './app.styled';
 const App = () => {
   return (
     <S.Layout>
-      <Autocomplete data={food} />
+      <Autocomplete
+        data={food}
+        placeholder="Search for food"
+        label="Food autocomplete"
+        id="foodAutocomplete"
+      />
     </S.Layout>
   );
 };

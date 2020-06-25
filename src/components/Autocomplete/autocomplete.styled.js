@@ -4,6 +4,16 @@ export const InputWrapper = styled.div`
   position: relative;
 `;
 
+export const Label = styled.label`
+  display: block;
+  padding-bottom: ${({ theme }) => theme.spaces.md};
+`;
+
+export const NoData = styled.div`
+  padding: ${({ theme }) => theme.spaces.lg};
+  box-shadow: 0 6px 6px rgba(0, 0, 0, 0.2);
+`;
+
 export const Input = styled.input`
   width: 100%;
   display: block;
@@ -41,7 +51,7 @@ export const ListItem = styled.li`
   cursor: pointer;
   display: block;
   white-space: normal;
-  padding: 20px;
+  padding: ${({ theme }) => theme.spaces.lg};
   background-color: ${({ selected }) =>
     selected ? 'rgba(0, 0, 0, 0.05)' : 'transparent'};
 `;

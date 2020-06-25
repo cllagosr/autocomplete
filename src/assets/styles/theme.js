@@ -9,8 +9,8 @@ export const spaces = {
   xs: '4px',
   sm: '8px',
   md: '12px',
-  lg: '24px',
-  xl: '36px',
+  lg: '20px',
+  xl: '28px',
 };
 
 export const theme = {
