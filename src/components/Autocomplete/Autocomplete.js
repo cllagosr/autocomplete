@@ -130,10 +130,17 @@ const Autocomplete = ({ data, label, placeholder, id }) => {
         value={typedValue}
         id={id}
         placeholder={placeholder}
+        aria-autocomplete="list"
+        aria-expanded={openDropdown}
+        data-testid="input"
       />
       {noDataFound && <S.NoData>No data found</S.NoData>}
       {openDropdown && (
-        <S.ListWrapper ref={listRef} maxNumItems={maxNumItems}>
+        <S.ListWrapper
+          aria-label="Search suggestions"
+          role="listbox"
+          ref={listRef}
+          maxNumItems={maxNumItems}>
           {filteredData.map((item, i) => {
             return (
               <S.ListItem
@@ -141,6 +148,7 @@ const Autocomplete = ({ data, label, placeholder, id }) => {
                 selected={index === i}
                 onClick={() => handleOnClick(i)}
                 dangerouslySetInnerHTML={{ __html: item.html }}
+                role="option"
               />
             );
           })}
